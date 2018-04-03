@@ -70,5 +70,18 @@ function get_longest_chain() {
   }
   return $chains[$longest_chain_index];
 }
+
+# Converts chain to string for sending
+function chain_to_string($chain) {
+  $string = "";
+  for ($i = count($chain) - 1; $i >= 0 ; $i--) {
+    $string .= $chain[$i]['username'];
+    if ($i != 0) {
+      $string .= " > ";
+    }
+  }
+  return $string;
+}
+
 $conn->close();
 ?>
