@@ -7,20 +7,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-function send_code($post_message, $reply=false) {
-  global $decoded;
+function send_code($post_message) {
   global $bot_api;
   global $chat_id;
   $url = 'https://api.telegram.org/bot' . $bot_api . '/sendMessage';
   $post_msg = array('chat_id' => $chat_id, 'text' => '```\n ' . $post_message . '```', 'parse_mode' => 'markdown' );
-  if ($reply != false) {
-    if ($reply === true){
-      $post_msg['reply_to_message_id'] = $decoded->{'message'}->{'message_id'};
-    }
-    else {
-      $post_msg['reply_to_message_id'] = $reply;
-    }
-  }
   $options = array(
     'http' => array(
       'header' => "Content-type: application/x-www-form-urlencoded\r\n",
