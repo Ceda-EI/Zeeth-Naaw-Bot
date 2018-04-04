@@ -8,11 +8,11 @@ if ($conn->connect_error) {
 }
 
 # Sends the given text wrapped in triple backticks as Markdown.
-function send_code($post_message) {
+function send_text($post_message) {
   global $bot_api;
   global $chat_id;
   $url = 'https://api.telegram.org/bot' . $bot_api . '/sendMessage';
-  $post_msg = array('chat_id' => $chat_id, 'text' => '```\n ' . $post_message . '```', 'parse_mode' => 'markdown' );
+  $post_msg = array('chat_id' => $chat_id, 'text' => $post_message );
   $options = array(
     'http' => array(
       'header' => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -117,7 +117,8 @@ $chain = get_longest_chain();
 $chain_string = chain_to_string($chain);
 $saved_chain = include('chain.php');
 if ($saved_chain != $chain_string) {
-  send_code($chain_string);
+  $send_message = "Chain Length: " . count($chain) . "\n" . $chain_string;
+  send_text($send_message);
   $file = fopen('chain.php', 'w');
   $contents = "<?php return '". $chain_string . "'; ?>";
   fwrite($file, $contents);
