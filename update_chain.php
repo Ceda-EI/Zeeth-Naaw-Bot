@@ -31,7 +31,7 @@ function get_chain_from_user($user) {
   $output = array($user);
   $last_user_id = $user['user_id'];
   while (true) {
-    $query = "SELECT user_id, username from users where follows = $last_user_id";
+    $query = "SELECT user_id, username from users where follows = $last_user_id ;";
     $result = $conn->query($query);
     if ($result->num_rows > 0){
       # Code executed if this isn't the last user
@@ -59,7 +59,7 @@ function get_longest_chain() {
   }
   $chains = array();
   while ($end_point = $end_points->fetch_assoc()){
-    $chain = get_chain_from_user($end_points);
+    $chain = get_chain_from_user($end_point);
     array_push($chains, $chain);
   }
   $longest_chain_index = 0;
@@ -91,17 +91,39 @@ function update_user_by_username($username) {
   $dom->preserveWhiteSpace = false;
   $xpath = new \DOMXPath($dom);
   foreach ($xpath->query("descendant-or-self::div[@class and contains(concat(' ', normalize-space(@class), ' '), ' tgme_page_description ')]/a") as $node){
-    $username = preg_replace('/^@/', '', $node->nodeValue);
-    $query = "SELECT user_id FROM users WHERE username = " .  $username ;
+    $username_follows = preg_replace('/^@/', '', $node->nodeValue);
+    $query = "SELECT user_id FROM users WHERE username = '" .  $username_follows . "';" ;
     $result = $conn->query($query);
-    if ($result->num_rows > 0) {
+    $query2 = "SELECT * FROM exceptions WHERE username = '" . $username  . "' AND points_to = '" . $username_follows . "';";
+    $exceptions = $conn->query($query2);
+    if ($result->num_rows > 0 && $exceptions->num_rows == 0) {
       $row = $result->fetch_assoc();
-      $query = "UPDATE users SET follows = " . $row['user_id'] . " WHERE username =  " . $username . ";" ;
+      $query = "UPDATE users SET follows = " . $row['user_id'] . " WHERE username =  '" . $username . "';" ;
       $conn->query($query);
       return;
     }
   }
 }
+
+# Update users
+$query = "SELECT username FROM users;";
+$users = $conn->query($query);
+while ($user = $users->fetch_assoc()) {
+  update_user_by_username($user['username']);
+}
+
+# Get longest chain and compare it to old chain and send it.
+$chain = get_longest_chain();
+$chain_string = chain_to_string($chain);
+$saved_chain = include('chain.php');
+if ($saved_chain != $chain_string) {
+  send_code($chain_string);
+  $file = fopen('chain.php', 'w');
+  $contents = "<?php return '". $chain_string . "'; ?>";
+  fwrite($file, $contents);
+  fclose($file);
+}
+
 
 $conn->close();
 ?>
