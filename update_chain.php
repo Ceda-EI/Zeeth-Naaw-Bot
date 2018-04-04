@@ -33,6 +33,16 @@ function get_chain_from_user($user) {
   while (true) {
     $query = "SELECT user_id, username from users where follows = $last_user_id ;";
     $result = $conn->query($query);
+    if ($result->num_rows > 1) {
+      $text = "Chain is unstable. The following users are pointing to ";
+      $op = $conn->query("select username from users where user_id = $last_user_id;");
+      $text .= $op->fetch_assoc()['username'] . "\n";
+      while ($row = $result->fetch_assoc()) {
+        $text .= '@' . $row['username'] . "\n";
+      }
+      send_text($text);
+      mysql_data_seek($result, 0);
+    }
     if ($result->num_rows > 0){
       # Code executed if this isn't the last user
       $details = $result->fetch_assoc();
