@@ -83,5 +83,25 @@ function chain_to_string($chain) {
   return $string;
 }
 
+function update_user_by_username($username) {
+  global $conn;
+  $html = file_get_contents("https://t.me/" . $username);
+  $dom = new domDocument;
+  $dom->loadHTML($html);
+  $dom->preserveWhiteSpace = false;
+  $xpath = new \DOMXPath($dom);
+  foreach ($xpath->query("descendant-or-self::div[@class and contains(concat(' ', normalize-space(@class), ' '), ' tgme_page_description ')]/a") as $node){
+    $username = preg_replace('/^@/', '', $node->nodeValue);
+    $query = "SELECT user_id FROM users WHERE username = " .  $username ;
+    $result = $conn->query($query);
+    if ($result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      $query = "UPDATE users SET follows = " . $row['user_id'] . " WHERE username =  " . $username . ";" ;
+      $conn->query($query);
+      return;
+    }
+  }
+}
+
 $conn->close();
 ?>
