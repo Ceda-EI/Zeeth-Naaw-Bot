@@ -62,6 +62,16 @@ $modules = array(
 
 $command_list = explode(" ", $decoded->{"message"}->{"text"});
 
+# Run new_member function for a new member
+if (isset($decoded->{'message'}->{'new_chat_members'})) {
+  new_member();
+}
+
+# Run member_exit function when a member leaves
+if (isset($decoded->{'message'}->{"left_chat_member"})) {
+  member_exit();
+}
+
 foreach ($modules as $module ) {
   if (check_command($module["command"])) {
     eval($module["function"]);
