@@ -1,4 +1,13 @@
 <?php
+ignore_user_abort(true);
+set_time_limit(0);
+ob_start();
+// do initial processing here
+header('Connection: close');
+header('Content-Length: '.ob_get_length());
+ob_end_flush();
+ob_flush();
+flush();
 $bot_name = "zeeth_naaw_bot";
 $bot_api = require('api_key.php');
 
@@ -41,6 +50,31 @@ function send_html($post_message, $reply=false) {
   $result = file_get_contents($url, false, $context);
 }
 
+function new_member() {
+  global $decoded;
+  foreach ($decoded->{'message'}->{'new_chat_members'} as $member){
+    $username = $member->{"username"};
+    $user_id = $member->{"chat_id"};
+    $query = "INSERT INTO users (user_id, username, follows) values($user_id, '$username', -1);";
+    $mysql = require('mysql_credentials.php');
+    $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    $conn->query($query);
+    $conn->close();
+    $lastmember = include('lastmember.php');
+    $text = "Welcome $username,\n";
+    $text .= "\n";
+    $text .= "Congratulations for following the chain all the way to here.\n";
+    $text .= "To get started, read the rules @Bio_Chain_2_Rules and add @$lastmember to your bio.\n";
+    $text .= "You can run /update to regenerate the chain.\n";
+    $text .= "\n";
+    $text .= "Have Fun";
+    send_text($text);
+  }
+
+}
 // Get JSON from post, store it and decode it.
 $var = file_get_contents('php://input');
 $decoded = json_decode($var);
