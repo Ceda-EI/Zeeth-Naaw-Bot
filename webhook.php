@@ -53,6 +53,9 @@ function send_html($post_message, $reply=false) {
 function new_member() {
   global $decoded;
   foreach ($decoded->{'message'}->{'new_chat_members'} as $member){
+    if ($member->{'is_bot'}) {
+      continue;
+    }
     $username = $member->{"username"};
     $user_id = $member->{"chat_id"};
     $query = "INSERT INTO users (user_id, username, follows) values($user_id, '$username', -1);";
@@ -73,8 +76,13 @@ function new_member() {
     $text .= "Have Fun";
     send_text($text);
   }
-
 }
+
+function update() {
+  send_text("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
+  include('./update_chain.php');
+}
+
 // Get JSON from post, store it and decode it.
 $var = file_get_contents('php://input');
 $decoded = json_decode($var);

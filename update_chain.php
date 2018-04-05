@@ -127,7 +127,7 @@ $chain = get_longest_chain();
 $chain_string = chain_to_string($chain);
 $saved_chain = include('chain.php');
 if ($saved_chain != $chain_string) {
-  $send_message = "Chain Length: " . count($chain) . "\n" . $chain_string;
+  $send_message = "Chain Length: " . count($chain) . "\n\n" . $chain_string;
   send_text($send_message);
   $file = fopen('chain.php', 'w');
   $contents = "<?php return '". $chain_string . "'; ?>";
