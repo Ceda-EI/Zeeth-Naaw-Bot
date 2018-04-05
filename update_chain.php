@@ -135,7 +135,7 @@ if ($saved_chain != $chain_string) {
   fwrite($file, $contents);
   fclose($file);
   $file2 = fopen('lastmember.php', 'w');
-  $contents = "<?php return '" . $chain[count($chain) - 1] . "'; ?>";
+  $contents = "<?php return '" . $chain[count($chain) - 1]["username"] . "'; ?>";
   fwrite($file2, $contents);
   fclose($file2);
 }
