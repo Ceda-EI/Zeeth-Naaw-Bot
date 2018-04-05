@@ -30,7 +30,7 @@ function pin_message($message_id) {
   global $bot_api;
   global $chat_id;
   $url = 'https://api.telegram.org/bot' . $bot_api . '/pinChatMessage';
-  $post_msg = array('chat_id' => $chat_id, 'message_id' => $message_id );
+  $post_msg = array('chat_id' => $chat_id, 'message_id' => $message_id, 'disable_notification' => 'true' );
   $options = array(
     'http' => array(
       'header' => "Content-type: application/x-www-form-urlencoded\r\n",
