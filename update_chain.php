@@ -101,6 +101,7 @@ function update_user_by_username($username) {
   $dom->loadHTML($html);
   $dom->preserveWhiteSpace = false;
   $xpath = new \DOMXPath($dom);
+  $changed = false;
   foreach ($xpath->query("descendant-or-self::div[@class and contains(concat(' ', normalize-space(@class), ' '), ' tgme_page_description ')]/a") as $node){
     $username_follows = preg_replace('/^@/', '', $node->nodeValue);
     $query = "SELECT user_id FROM users WHERE username = '" .  $username_follows . "';" ;
@@ -111,8 +112,13 @@ function update_user_by_username($username) {
       $row = $result->fetch_assoc();
       $query = "UPDATE users SET follows = " . $row['user_id'] . " WHERE username =  '" . $username . "';" ;
       $conn->query($query);
+      $changed = true;
       return;
     }
+  }
+  if (!$changed) {
+      $query = "UPDATE users SET follows = -1 WHERE username =  '" . $username . "';" ;
+      $conn->query($query);
   }
 }
 
