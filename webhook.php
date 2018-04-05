@@ -74,12 +74,13 @@ function new_member() {
     $text .= "You can run /update to regenerate the chain.\n";
     $text .= "\n";
     $text .= "Have Fun";
-    send_text($text);
+    send_html($text);
   }
 }
 
+
 function update() {
-  send_text("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
+  send_html("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
   include('./update_chain.php');
 }
 
