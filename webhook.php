@@ -1,13 +1,4 @@
 <?php
-ignore_user_abort(true);
-set_time_limit(0);
-ob_start();
-// do initial processing here
-header('Connection: close');
-header('Content-Length: '.ob_get_length());
-ob_end_flush();
-ob_flush();
-flush();
 $bot_name = "zeeth_naaw_bot";
 $bot_api = require('api_key.php');
 
@@ -81,7 +72,7 @@ function new_member() {
 
 function update() {
   send_html("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
-  include('./update_chain.php');
+  exec('echo php ' . __DIR__ . '/update_chain.php | at now');
 }
 
 // Get JSON from post, store it and decode it.
