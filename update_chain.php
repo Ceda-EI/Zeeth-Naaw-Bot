@@ -25,6 +25,24 @@ function send_text($post_message) {
   return $result;
 }
 
+# Pin Message
+function pin_message($message_id) {
+  global $bot_api;
+  global $chat_id;
+  $url = 'https://api.telegram.org/bot' . $bot_api . '/pinChatMessage';
+  $post_msg = array('chat_id' => $chat_id, 'message_id' => $message_id, 'disable_notification' => 'true' );
+  $options = array(
+    'http' => array(
+      'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+      'method' => 'POST',
+      'content' => http_build_query($post_msg)
+    )
+  );
+  $context = stream_context_create($options);
+  $result = file_get_contents($url, false, $context);
+  return $result;
+}
+
 # Takes a user array as input. Checks who follows him/her and adds
 # him/her to $output array. Exits when a user is followed by no one.
 function get_chain_from_user($user) {
@@ -135,7 +153,9 @@ $chain_string = chain_to_string($chain);
 $saved_chain = include('chain.php');
 if ($saved_chain != $chain_string) {
   $send_message = "Chain Length: " . count($chain) . "\n\n" . $chain_string;
-  send_text($send_message);
+  $reply = send_text($send_message);
+  $json = json_decode($reply);
+  pin_message($reply->{'result'}->{"message_id"});
   $file = fopen('chain.php', 'w');
   $contents = "<?php return '". $chain_string . "'; ?>";
   fwrite($file, $contents);
