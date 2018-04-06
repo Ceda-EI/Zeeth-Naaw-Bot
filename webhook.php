@@ -48,7 +48,7 @@ function new_member() {
       continue;
     }
     $username = $member->{"username"};
-    $user_id = $member->{"chat_id"};
+    $user_id = $member->{"id"};
     $query = "INSERT INTO users (user_id, username, follows) values($user_id, '$username', -1);";
     $mysql = require('mysql_credentials.php');
     $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
