@@ -155,7 +155,7 @@ if ($saved_chain != $chain_string) {
   $send_message = "Chain Length: " . count($chain) . "\n\n" . $chain_string;
   $reply = send_text($send_message);
   $json = json_decode($reply);
-  pin_message($reply->{'result'}->{"message_id"});
+  pin_message($json->{'result'}->{"message_id"});
   $file = fopen('chain.php', 'w');
   $contents = "<?php return '". $chain_string . "'; ?>";
   fwrite($file, $contents);
