@@ -58,10 +58,10 @@ function new_member() {
     $conn->query($query);
     $conn->close();
     $lastmember = include('lastmember.php');
-    $text = "Welcome $username,\n";
+    $text = "Welcome @$username,\n";
     $text .= "\n";
     $text .= "Congratulations for following the chain all the way to here.\n";
-    $text .= "To get started, read the rules @Bio_Chain_2_Rules and add @$lastmember to your bio.\n";
+    $text .= "To get started, read the rules @Bio_Chain_2_Rules and add <pre>@$lastmember</pre> to your bio.\n";
     $text .= "You can run /update to regenerate the chain.\n";
     $text .= "\n";
     $text .= "Have Fun";
@@ -69,6 +69,8 @@ function new_member() {
   }
 }
 
+function member_exit() {
+}
 
 function update() {
   send_html("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
