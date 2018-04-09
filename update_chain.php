@@ -165,6 +165,9 @@ if ($saved_chain != $chain_string) {
   fwrite($file2, $contents);
   fclose($file2);
 }
+elseif ($argv[1] == "send") {
+  send_text("The pinned message is already the latest.");
+}
 
 
 $conn->close();

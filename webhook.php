@@ -74,7 +74,7 @@ function member_exit() {
 
 function update() {
   send_html("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
-  exec('echo php ' . __DIR__ . '/update_chain.php | at now');
+  exec('echo php ' . __DIR__ . '/update_chain.php send | at now');
 }
 
 // Get JSON from post, store it and decode it.
