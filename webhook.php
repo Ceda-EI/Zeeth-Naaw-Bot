@@ -89,7 +89,7 @@ function dnf() {
   while ($row = $result->fetch_assoc()) {
     $text .= $row['username'] . "\n";
   }
-  send_text($text);
+  send_html($text);
   $conn->close();
 }
 
