@@ -77,6 +77,22 @@ function update() {
   exec('echo php ' . __DIR__ . '/update_chain.php send | at now');
 }
 
+function dnf() {
+  $mysql = require('mysql_credentials.php');
+  $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+  $query = "SELECT username from users where follows = -1 ;";
+  $result = $conn->query($query);
+  $text = "The following users follow no other user. \n";
+  while ($row = $result->fetch_assoc()) {
+    $text .= $row['username'] . "\n";
+  }
+  send_text($text);
+  $conn->close();
+}
+
 // Get JSON from post, store it and decode it.
 $var = file_get_contents('php://input');
 $decoded = json_decode($var);
@@ -92,6 +108,10 @@ $modules = array(
   array(
     "command" => "/update",
     "function" => "update();"
+  ),
+  array(
+    "command" => "/doesnotfollow",
+    "function" => "dnf();"
   )
 );
 
