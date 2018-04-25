@@ -139,6 +139,15 @@ function update_user_by_username($username) {
       $conn->query($query);
   }
 }
+if ($argv[1] == "all") {
+  $query = "SELECT user_id, username FROM users WHERE follows = -1;";
+  $end_points = $conn->query($query);
+  while ($end_point = $end_points->fetch_assoc()){
+    $chain = get_chain_from_user($end_point);
+    send_text(chain_to_string($chain));
+  }
+  exit();
+}
 
 # Update users
 $query = "SELECT username FROM users;";

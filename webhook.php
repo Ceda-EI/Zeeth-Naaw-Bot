@@ -77,6 +77,10 @@ function update() {
   exec('echo php ' . __DIR__ . '/update_chain.php send | at now');
 }
 
+function allchains() {
+  exec('echo php ' . __DIR__ . '/update_chain.php all | at now');
+}
+
 function dnf() {
   $mysql = require('mysql_credentials.php');
   $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
@@ -112,6 +116,10 @@ $modules = array(
   array(
     "command" => "/doesnotfollow",
     "function" => "dnf();"
+  ),
+  array(
+    "command" => "/allchains",
+    "function" => "allchains();"
   )
 );
 
