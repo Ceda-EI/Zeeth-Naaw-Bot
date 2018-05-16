@@ -43,6 +43,10 @@ function send_html($post_message, $reply=false) {
 
 function new_member() {
   global $decoded;
+  $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
   foreach ($decoded->{'message'}->{'new_chat_members'} as $member){
     if ($member->{'is_bot'}) {
       continue;
@@ -51,12 +55,7 @@ function new_member() {
     $user_id = $member->{"id"};
     $query = "INSERT INTO users (user_id, username, follows) values($user_id, '$username', -1);";
     $mysql = require('mysql_credentials.php');
-    $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
     $conn->query($query);
-    $conn->close();
     $lastmember = include('lastmember.php');
     $text = "Welcome @$username,\n";
     $text .= "\n";
@@ -67,9 +66,54 @@ function new_member() {
     $text .= "Have Fun";
     send_html($text);
   }
+  $conn->close();
 }
 
 function member_exit() {
+  global $decoded;
+  $mysql = require('mysql_credentials.php');
+  $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+  $user = $decoded->{"message"}->{"left_chat_member"};
+  $user_id = $user->{"id"};
+  $username = $user->{"username"};
+  $follows_return = $conn->query("select * from users where user_id = $user_id;");
+  if ($follows_return->num_rows == 0){
+    exit();
+  }
+  $follows = $follows_return->fetch_assoc()["follows"];
+  if ($follows != -1){
+    $follows_username = $conn->query("select * from users where user_id = $follows;")->fetch_assoc()['username'];
+  }
+  $followed_by_return = $conn->query("select * from users where follows = $user_id;");
+  if ($followed_by_return->num_rows == 0){
+    exit();
+  }
+  $followed_by_return->fetch_assoc();
+  if ($followed_by_return->num_rows > 0) {
+    if ($follows = -1) {
+      $text = "$username left. They had no username in his bio. The following user(s)  pointed to they:\n";
+    }
+    else {
+      $text = "$username left. They had <pre>$follows_username</pre> username in his bio. The following user(s)  pointed to they:\n";
+    }
+    while ($row = $followed_by_return->fetch_assoc()){
+      $text .= $row["username"] . "\n";
+    }
+  }
+  else {
+    if ($follows = -1) {
+      $text = "$username left. They had no username in his bio. No user pointed to they.";
+    }
+    else {
+      $text = "$username left. They had <pre>$follows_username</pre> username in his bio. No user pointed to they.";
+    }
+  }
+  send_html($text);
+  $conn->query("delete from users where user_id = $user_id;");
+  $conn->close();
 }
 
 function update() {
