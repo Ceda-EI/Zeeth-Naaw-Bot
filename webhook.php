@@ -43,6 +43,7 @@ function send_html($post_message, $reply=false) {
 
 function new_member() {
   global $decoded;
+  $mysql = require('mysql_credentials.php');
   $conn = new mysqli($mysql['servername'], $mysql['username'], $mysql['password'], $mysql['database']);
   if ($conn->connect_error) {
       die("Connection failed: " . $conn->connect_error);
@@ -54,7 +55,6 @@ function new_member() {
     $username = $member->{"username"};
     $user_id = $member->{"id"};
     $query = "INSERT INTO users (user_id, username, follows) values($user_id, '$username', -1);";
-    $mysql = require('mysql_credentials.php');
     $conn->query($query);
     $lastmember = include('lastmember.php');
     $text = "Welcome @$username,\n";
