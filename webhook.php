@@ -80,18 +80,11 @@ function member_exit() {
   $user_id = $user->{"id"};
   $username = $user->{"username"};
   $follows_return = $conn->query("select * from users where user_id = $user_id;");
-  if ($follows_return->num_rows == 0){
-    exit();
-  }
   $follows = $follows_return->fetch_assoc()["follows"];
   if ($follows != -1){
     $follows_username = $conn->query("select * from users where user_id = $follows;")->fetch_assoc()['username'];
   }
   $followed_by_return = $conn->query("select * from users where follows = $user_id;");
-  if ($followed_by_return->num_rows == 0){
-    exit();
-  }
-  $followed_by_return->fetch_assoc();
   if ($followed_by_return->num_rows > 0) {
     if ($follows = -1) {
       $text = "$username left. They had no username in his bio. The following user(s)  pointed to they:\n";
