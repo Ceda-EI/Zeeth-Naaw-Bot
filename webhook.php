@@ -77,33 +77,12 @@ function member_exit() {
       die("Connection failed: " . $conn->connect_error);
   }
   $user = $decoded->{"message"}->{"left_chat_member"};
+  if ($user->{"is_bot"} == true){
+    exit();
+  }
   $user_id = $user->{"id"};
   $username = $user->{"username"};
-  $follows_return = $conn->query("select * from users where user_id = $user_id;");
-  $follows = $follows_return->fetch_assoc()["follows"];
-  if ($follows != -1){
-    $follows_username = $conn->query("select * from users where user_id = $follows;")->fetch_assoc()['username'];
-  }
-  $followed_by_return = $conn->query("select * from users where follows = $user_id;");
-  if ($followed_by_return->num_rows > 0) {
-    if ($follows = -1) {
-      $text = "$username left. They had no username in his bio. The following user(s)  pointed to they:\n";
-    }
-    else {
-      $text = "$username left. They had <pre>$follows_username</pre> username in his bio. The following user(s)  pointed to they:\n";
-    }
-    while ($row = $followed_by_return->fetch_assoc()){
-      $text .= $row["username"] . "\n";
-    }
-  }
-  else {
-    if ($follows = -1) {
-      $text = "$username left. They had no username in his bio. No user pointed to they.";
-    }
-    else {
-      $text = "$username left. They had <pre>$follows_username</pre> username in his bio. No user pointed to they.";
-    }
-  }
+  $text = "$username has left the group. They have been removed from the database.";
   send_html($text);
   $conn->query("delete from users where user_id = $user_id;");
   $conn->close();
