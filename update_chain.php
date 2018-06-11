@@ -106,7 +106,7 @@ function chain_to_string($chain) {
   for ($i = count($chain) - 1; $i >= 0 ; $i--) {
     $string .= $chain[$i]['username'];
     if ($i != 0) {
-      $string .= " → ";
+      $string .= "\n";
     }
   }
   return $string;
