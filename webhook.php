@@ -89,7 +89,7 @@ function member_exit() {
 }
 
 function update() {
-  send_html("Update started. New chain will only be send if the chain has changed. Please wait as this takes about a minute.");
+  send_html("Update started. Please wait as this takes about a minute.");
   exec('echo php ' . __DIR__ . '/update_chain.php send | at now');
 }
 

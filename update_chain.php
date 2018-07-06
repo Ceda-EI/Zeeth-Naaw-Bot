@@ -106,7 +106,7 @@ function chain_to_string($chain) {
   for ($i = count($chain) - 1; $i >= 0 ; $i--) {
     $string .= $chain[$i]['username'];
     if ($i != 0) {
-      $string .= "\n";
+      $string .= " → ";
     }
   }
   return $string;
@@ -144,6 +144,9 @@ if ($argv[1] == "all") {
   $end_points = $conn->query($query);
   while ($end_point = $end_points->fetch_assoc()){
     $chain = get_chain_from_user($end_point);
+    if (count($chain) == 1){
+      continue;
+    }
     send_text(chain_to_string($chain));
   }
   exit();
