@@ -56,6 +56,8 @@ function new_member() {
     $user_id = $member->{"id"};
     $query = "INSERT INTO users (user_id, username, follows) values($user_id, '$username', -1);";
     $conn->query($query);
+    $query = "INSERT INTO exceptions (username, username) values('$username', '$username');";
+    $conn->query($query);
     $lastmember = include('lastmember.php');
     $text = "Welcome @$username,\n";
     $text .= "\n";
